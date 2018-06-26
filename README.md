@@ -6,4 +6,4 @@ python3 prostoboxes.py --images $IMAGES_DIR --db $ANNOTATION_DIR
 xdg-open http://localhost:5000
 ```
 
-https://gist.github.com/bradmontgomery/2219997
+https://github.com/luis-almeida/unveil/blob/master/jquery.unveil.js
