@@ -3,9 +3,7 @@ import os
 import json
 import random
 import time
-
-import http.server # import BaseHTTPRequestHandler, HTTPServer
-import flask
+import http.server
 
 ui_html = '''
 <html lang="en">
@@ -97,23 +95,10 @@ parser.add_argument('--db', default = 'db')
 parser.add_argument('--seed', default = time.time(), type = int)
 parser.add_argument('--port', default = 5000, type = int)
 args = parser.parse_args()
-
 for dir in [args.images, args.db]:
 	if not os.path.exists(dir):
 		os.makedirs(dir)
 random.seed(args.seed)
-
-app = flask.Flask(__name__, static_url_path = '')
-@app.route('/', defaults = dict(filename = None), methods = ['GET', 'POST'])
-@app.route('/<filename>', methods = ['GET', 'POST'])
-def handle(filename):
-	if flask.request.method == 'GET':
-		return flask.send_from_directory(os.path.join(os.getcwd(), args.images), filename) if filename else ui_html
-	if filename:
-		with open(os.path.join(args.db, filename), 'w') as f:
-			json.dump(flask.request.get_json(), f)
-	return random.choice(list(set(os.listdir(args.images)) - set(os.listdir(args.db))) or ['DONE'])
-app.run()
 
 class BoundingBoxAnnotationUI(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -121,10 +106,14 @@ class BoundingBoxAnnotationUI(http.server.BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         self.wfile.write("<html><body><h1>hi!</h1></body></html>")
+	return flask.send_from_directory(os.path.join(os.getcwd(), args.images), filename) if filename else ui_html
 
     def do_POST(self):
         self.wfile.write("<html><body><h1>POST!</h1></body></html>")
-
+	if filename:
+		with open(os.path.join(args.db, filename), 'w') as f:
+			json.dump(flask.request.get_json(), f)
+	return random.choice(list(set(os.listdir(args.images)) - set(os.listdir(args.db))) or ['DONE'])
 try:
 	server = http.server.HTTPServer(('', args.port), BoundingBoxAnnotationUI)
 	server.serve_forever()
