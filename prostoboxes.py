@@ -49,6 +49,9 @@ ui_html = '''
 				$('svg').append($('svg circle[style=display\\\\:none]').clone().removeAttr('style').attr("cx", cx).attr("cy", cy).attr("fill", color));
 				if(box.length == 4)
 					$('svg').append($('svg rect[style=display\\\\:none]').clone().removeAttr('style').attr("x", box[0]).attr("y", box[1]).attr("fill", color).attr("width", box[2] - box[0]).attr("height", box[3] - box[1]));
+					
+				//var cmp_convex_hull = function(a, b) { return (a.x - center.x) * (b.y - center.y) - (b.x - center.x) * (a.y - center.y); };
+				//this.events[this.events.length - 1].value.sort(cmp_convex_hull);
 			}
 
 			function remove()
